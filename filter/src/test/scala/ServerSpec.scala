@@ -1,6 +1,7 @@
 package unfiltered.server
 
 import org.specs._
+import java.net.InetAddress
 
 object ServerSpec extends Specification with unfiltered.spec.jetty.Served {
   import unfiltered.response._
@@ -20,13 +21,13 @@ object ServerSpec extends Specification with unfiltered.spec.jetty.Served {
       http(host as_str) must_== "test"
     }
     "provide a remote address" in {
-      http(host / "addr" as_str) must_== "127.0.0.1"
+      http(host / "addr" as_str) must_== InetAddress.getLocalHost.getHostAddress
     }
     "provide a remote address accounting for X-Forwared-For header" in {
       http(host / "addr_extractor" <:< Map("X-Forwarded-For" -> "66.108.150.228") as_str) must_== "66.108.150.228"
     }
     "provide a remote address accounting for X-Forwared-For header filtering private addresses" in {
-      http(host / "addr_extractor" <:< Map("X-Forwarded-For" -> "172.31.255.255") as_str) must_== "127.0.0.1"
+      http(host / "addr_extractor" <:< Map("X-Forwarded-For" -> "172.31.255.255") as_str) must_== InetAddress.getLocalHost.getHostAddress
     }
   }
 }
